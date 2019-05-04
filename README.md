@@ -45,6 +45,10 @@ Robotics: Simulated Goal-Based Tasks
 # Environment
 
 # Usage
+Add the root directory to PYTHONPATH
+```
+export PYTHONPATH=$PWD
+```
 
 # Reference
 
