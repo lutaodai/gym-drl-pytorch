@@ -12,30 +12,37 @@ from utils.utils import str2bool, plot_scores
 from agents.dqn import DQNAgent
 
 PARSER = argparse.ArgumentParser(description=None)
-PARSER.add_argument('-dou_dqn', '--double_dqn', default=False, type=str2bool, 
-                    help="specifying if using double dqn")
-PARSER.add_argument('-due_dqn', '--dueling_dqn', default=False, type=str2bool, 
-                    help="specifying if using dueling dqn")
-PARSER.add_argument('-fdir', '--figure_dir', default="figure",
-                    help="directory storing figures")
-PARSER.add_argument('-mdir', '--model_dir', default='model',
-                    help="directory storing models")
+# choosing algorithm
+PARSER.add_argument('-dou_dqn', '--double_dqn', default=False, type=str2bool, help="if using double dqn")
+PARSER.add_argument('-due_dqn', '--dueling_dqn', default=True, type=str2bool, help="if using dueling dqn")
+
+# output path
+PARSER.add_argument('-fdir', '--figure_dir', default="figure", help="directory storing figures")
+PARSER.add_argument('-mdir', '--model_dir', default='model', help="directory storing models")
+PARSER.add_argument('-f', '--flag', default='dueling_dqn', type=str, help="saving name")
+
+# figure setting
 PARSER.add_argument('-ws', '--window_size', default=100, type=int,
                     help="moving average window for plotting")
+# replay buffer
 PARSER.add_argument('-bus', '--buffer_size', default=int(1e5), type=int,
                     help='buffer size for experience replay buffer')
-PARSER.add_argument('-bas', '--batch_size', default=256, type=int,
-                    help='batch size training')
-PARSER.add_argument('-gamma', '--gamma', default=0.99, type=float,
-                    help='discount factor')
-PARSER.add_argument('-tau', '--tau', default=1e-3, type=float,
-                    help='factor for soft update of target parameters')
-PARSER.add_argument('-lr', '--lr', default=5e-4, type=float,
-                    help='learning rate')
-PARSER.add_argument('-uf', '--update_frequency', default=4, type=int,
-                    help='how often to update the network')
+# RL hyperparameters
+PARSER.add_argument('-gamma', '--gamma', default=0.99, type=float, help='discount factor')
+PARSER.add_argument('-tau', '--tau', default=1e-3, type=float, help='factor for soft update of target parameters')
+PARSER.add_argument('-lr', '--lr', default=5e-4, type=float, help='learning rate')
+PARSER.add_argument('-uf', '--update_frequency', default=4, type=int, help='how often to update the network')
+
+# training hyperparameters
+PARSER.add_argument('-bas', '--batch_size', default=256, type=int,help='batch size training')
 PARSER.add_argument('-s', '--seed', default=1, type=int, help="seeds")
-PARSER.add_argument('-f', '--flag', default='dqn', type=str, help="saving name")
+PARSER.add_argument('-maxt', '--maxt', default=1000, type=int, help="maximum episode length")
+PARSER.add_argument('-n', '--n_episode', default=2000, type=int, help="maximum numbers of episode")
+PARSER.add_argument('-e0', '--epi_start', default=1., type=float, help='initial epsilon')
+PARSER.add_argument('-eT', '--epi_end', default=0.01, type=float, help='minimum epsilon')
+PARSER.add_argument('-e_decay', '--epi_decay', default=0.995, type=float, help='epsilon decay rate')
+PARSER.add_argument('-b', '--baseline', default=195, type=float, help='stopping baseline')
+
 ARGS = PARSER.parse_args()
 print(ARGS)
 
@@ -58,11 +65,11 @@ if __name__ == "__main__":
                      args=ARGS,
                      device=device)
     
-    n_episodes=2000
-    max_t=10000
-    eps_start=1
-    eps_end=0.01
-    eps_decay=0.997
+    n_episodes = ARGS.n_episode
+    max_t = ARGS.maxt
+    eps_start = ARGS.epi_start
+    eps_end = ARGS.epi_end
+    eps_decay = ARGS.epi_decay
     
     scores = []                        # list containing scores from each episode
     scores_window = deque(maxlen=100)  # last 100 scores
@@ -87,7 +94,7 @@ if __name__ == "__main__":
         print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), end="")
         if i_episode % 100 == 0:
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
-        if np.mean(scores_window)>=195.0:
+        if np.mean(scores_window) >= ARGS.baseline:
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode-100, np.mean(scores_window)))
 
             if ARGS.double_dqn:
