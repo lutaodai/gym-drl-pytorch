@@ -44,7 +44,11 @@ Robotics: Simulated Goal-Based Tasks
 
 |Environment|DQN|Double-DQN|Dueling-DQN|
 |---|:-:|:-:|:-:|
-|CartPole-v1|&#9745;|&#9745;|[x]|
+|CartPole-v1|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|
+
+:sweat_drops: in progress
+:hourglass_flowing_sand: fune tuning stage
+:ballot_box_with_check: done
 
 # Environment
 
