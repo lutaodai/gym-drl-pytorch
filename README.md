@@ -47,7 +47,7 @@ Robotics: Simulated Goal-Based Tasks
 |CartPole-v1|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|
 
 :sweat_drops: in progress
-:hourglass_flowing_sand: fune tuning stage
+:hourglass_flowing_sand: fune tuning
 :ballot_box_with_check: done
 
 # Environment
