@@ -12,6 +12,11 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
         
+def str2tuple(v):
+    v = eval(v)
+    assert isinstance(v, tuple)
+    return v
+        
         
 def plot_scores(scores, name, window_size, save_dir):
     scores = pd.DataFrame(scores, columns=["scores"])
@@ -23,5 +28,7 @@ def plot_scores(scores, name, window_size, save_dir):
                 data=scores, kind="line")
     plt.plot(scores["index"], scores["scores_avg"], color=sns.xkcd_rgb["amber"])
     plt.legend(["Scores", "MA(%d)" %window_size])
-    
     plt.savefig(os.path.join(save_dir, "score_plot_" + name + ".png"))
+    
+def env_summary():
+    pass

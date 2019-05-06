@@ -23,32 +23,34 @@ class DQNAgent():
         """
         self.state_size = state_size
         self.action_size = action_size
+        self.hidden_size = args.hidden_size
         self.seed = args.seed
-        self.double_dqn = args.double_dqn
-        self.dueling_dqn = args.dueling_dqn
         self.args = args
         self.device = device
-        assert self.double_dqn * self.dueling_dqn == 0
-        if self.double_dqn:
+        assert self.args.agent in ['dqn', 'double_dqn', 'dueling_dqn'],\
+                "invalid agent name"
+        if self.args.agent == "double_dqn":
             print("Implementing Double DQN!")
-        elif self.dueling_dqn:
+        elif self.args.agent == "dueling_dqn":
             print("Implementing Dueling DQN!")
         else:
             print("Implementing DQN")
 
         # Q-Network
-        if self.dueling_dqn:
-            self.qnetwork_local = DuelingQNetwork(state_size, action_size, self.seed).to(device)
-            self.qnetwork_target = DuelingQNetwork(state_size, action_size, self.seed).to(device)
+        if self.args.agent == "dueling_dqn":
+            self.qnetwork_local = DuelingQNetwork(state_size, action_size, self.hidden_size, self.seed).to(device)
+            self.qnetwork_target = DuelingQNetwork(state_size, action_size, self.hidden_size, self.seed).to(device)
         else:
-            self.qnetwork_local = QNetwork(state_size, action_size, self.seed).to(device)
-            self.qnetwork_target = QNetwork(state_size, action_size, self.seed).to(device)
+            self.qnetwork_local = QNetwork(state_size, action_size, self.hidden_size, self.seed).to(device)
+            self.qnetwork_target = QNetwork(state_size, action_size, self.hidden_size, self.seed).to(device)
+        print("Agent Architecture")
+        print(self.qnetwork_local)
         self.optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=self.args.lr)
 
         # Replay memory
         self.memory = ReplayBuffer(action_size, args.buffer_size, args.batch_size, self.seed, self.device)
         # Initialize time step (for updating every UPDATE_EVERY steps)
-        self.t_step = 0
+        self.t_step = args.update_frequency
     
     def step(self, state, action, reward, next_state, done):
         # Save experience in replay memory
@@ -94,7 +96,7 @@ class DQNAgent():
         states, actions, rewards, next_states, dones = experiences
         
         # Get max predicted Q values (for next states) from target model
-        if self.double_dqn:
+        if self.args.agent == "double_dqn":
             next_actions = torch.argmax(self.qnetwork_local(next_states), dim=1).unsqueeze(1)
             Q_targets_next = self.qnetwork_target(next_states).gather(1, next_actions)
         else:
@@ -132,7 +134,7 @@ class DQNAgent():
 class QNetwork(nn.Module):
     """Model for DQN and Double DQN"""
 
-    def __init__(self, state_size, action_size, seed):
+    def __init__(self, state_size, action_size, hidden_size, seed):
         """Initialize parameters and build model.
         Params
         ======
@@ -141,27 +143,25 @@ class QNetwork(nn.Module):
             seed (int): Random seed
         """
         super(QNetwork, self).__init__()
-        self.seed = torch.manual_seed(seed)
+        torch.manual_seed(seed)
+        dims = (state_size,) + tuple(hidden_size) + (action_size,)
+        self.linears = nn.ModuleList([nn.Linear(dims[i], dims[i+1]) for i in range(len(dims)-1)])
 
-        h1, h2, h3 = 64, 64, 16
-        
-        self.fc1 = nn.Linear(state_size, h1)
-        self.fc2 = nn.Linear(h1, h2)
-        self.fc3 = nn.Linear(h2, h3)
-        self.fc4 = nn.Linear(h3, action_size)
 
-    def forward(self, state):
+    def forward(self, x):
         """Build a network that maps state -> action values."""
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        x = self.fc4(x)
+        ind_end = len(self.linears)
+        for i, l in enumerate(self.linears):
+            if i == ind_end:
+                x = l(x)
+            else:
+                x = F.relu(l(x))
         return x
     
 class DuelingQNetwork(nn.Module):
     """Model for Dueling DQN"""
     
-    def __init__(self, state_size, action_size, seed):
+    def __init__(self, state_size, action_size, hidden_size, seed):
         """Initialize parameters and build model.
         Params
         ======
@@ -172,33 +172,33 @@ class DuelingQNetwork(nn.Module):
         super(DuelingQNetwork, self).__init__()
         self.seed = torch.manual_seed(seed)
         self.action_size = action_size
+        assert len(hidden_size) == 3
+        assert isinstance(hidden_size[0], tuple)
+        assert isinstance(hidden_size[1], tuple)
+        assert isinstance(hidden_size[2], tuple)
         
-        h1, h2, h3 = 32, 64, 64
-        hv, ha = 128, 128
+        base_dims = (state_size,) + hidden_size[0]
+        self.base = nn.ModuleList([nn.Linear(base_dims[i], base_dims[i+1])
+                                      for i in range(len(base_dims)-1)])
         
-        self.fc1 = nn.Linear(state_size, h1)
-        self.fc2 = nn.Linear(h1, h2)
-        self.fc3 = nn.Linear(h2, h3)
+        v_dims = (base_dims[-1], ) + hidden_size[1] + (1,)
+        self.branch_v = nn.ModuleList([nn.Linear(v_dims[i], v_dims[i+1])
+                                      for i in range(len(v_dims)-1)])
         
-        
-        self.fc_v1 = nn.Linear(h3, hv)
-        self.fc_a1 = nn.Linear(h3, ha)
-        
-        self.fc_v2 = nn.Linear(hv, 1)
-        self.fc_a2 = nn.Linear(ha, action_size)
+        a_dims = (base_dims[-1], ) + hidden_size[2] + (action_size, )
+        self.branch_a = nn.ModuleList([nn.Linear(a_dims[i], a_dims[i+1])
+                                      for i in range(len(a_dims)-1)])
     
-    def forward(self, state):
+    def forward(self, x):
         """Build a network that maps state -> action values."""
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        
-        v = F.relu(self.fc_v1(x))
-        v = F.relu(self.fc_v2(v))
-        
-        a = F.relu(self.fc_a1(x))
-        a = F.relu(self.fc_a2(a))
-        
+        for i, l in enumerate(self.base):
+            x = F.relu(l(x))
+        v, a = x, x
+        for i, l in enumerate(self.branch_v):
+            v = F.relu(l(v))
+        for i, l in enumerate(self.branch_a):
+            a = F.relu(l(a))
+
         x = v + a - a.mean(1).unsqueeze(1).expand(x.size(0), self.action_size)
         
         return x

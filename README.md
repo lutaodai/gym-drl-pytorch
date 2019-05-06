@@ -6,7 +6,7 @@ A PyTorch Implementation
 # Todo
 Classic Control
 - [ ] Acrobot
-- [ ] CartPole
+- [x] CartPole
 - [ ] MountainCar
 - [ ] MountainCar Continuous
 - [ ] Pendulum
@@ -41,6 +41,10 @@ Robotics: Simulated Goal-Based Tasks
 - [ ] Hand Reach
 
 # Content
+
+|Environment|DQN|Double-DQN|Dueling-DQN|
+|---|:-:|:-:|:-:|
+|CartPole-v1|[x]|[x]|[x]|
 
 # Environment
 
