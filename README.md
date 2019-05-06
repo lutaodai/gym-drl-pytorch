@@ -44,7 +44,7 @@ Robotics: Simulated Goal-Based Tasks
 
 |Environment|DQN|Double-DQN|Dueling-DQN|
 |---|:-:|:-:|:-:|
-|CartPole-v1|[x]|[x]|[x]|
+|CartPole-v1|&#9745;|&#9745;|[x]|
 
 # Environment
 
