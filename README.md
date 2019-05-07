@@ -3,6 +3,18 @@ A PyTorch Implementation
 
 [OpenAI Gym Environment](https://gym.openai.com/envs "OpenAI Gym Environment Homepage")
 
+
+
+# Content
+
+|Environment|DQN|Double-DQN|Dueling-DQN|REINFORCE|
+|---|:-:|:-:|:-:|:-:|
+|CartPole-v1|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|
+
+- :sweat_drops: in progress
+- :hourglass_flowing_sand: fune tuning
+- :ballot_box_with_check: done
+
 # Todo
 Classic Control
 - [ ] Acrobot
@@ -39,16 +51,6 @@ Robotics: Simulated Goal-Based Tasks
 - [ ] Hand Manipulate (Egg)
 - [ ] Hand Manipulate (Pen)
 - [ ] Hand Reach
-
-# Content
-
-|Environment|DQN|Double-DQN|Dueling-DQN|
-|---|:-:|:-:|:-:|
-|CartPole-v1|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|
-
-:sweat_drops: in progress
-:hourglass_flowing_sand: fune tuning
-:ballot_box_with_check: done
 
 # Environment
 

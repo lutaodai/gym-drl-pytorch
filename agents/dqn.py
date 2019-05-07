@@ -144,7 +144,8 @@ class QNetwork(nn.Module):
         """
         super(QNetwork, self).__init__()
         torch.manual_seed(seed)
-        dims = (state_size,) + tuple(hidden_size) + (action_size,)
+        assert isinstance(hidden_size, tuple)
+        dims = (state_size,) + hidden_size + (action_size,)
         self.linears = nn.ModuleList([nn.Linear(dims[i], dims[i+1]) for i in range(len(dims)-1)])
 
 
@@ -152,7 +153,7 @@ class QNetwork(nn.Module):
         """Build a network that maps state -> action values."""
         ind_end = len(self.linears)
         for i, l in enumerate(self.linears):
-            if i == ind_end:
+            if i == ind_end - 1:
                 x = l(x)
             else:
                 x = F.relu(l(x))

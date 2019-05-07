@@ -3,6 +3,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -29,6 +30,21 @@ def plot_scores(scores, name, window_size, save_dir):
     plt.plot(scores["index"], scores["scores_avg"], color=sns.xkcd_rgb["amber"])
     plt.legend(["Scores", "MA(%d)" %window_size])
     plt.savefig(os.path.join(save_dir, "score_plot_" + name + ".png"))
-    
+
+def eps2prob(eps, action_size):
+    random_p = eps/action_size*(action_size-1)
+    best_p = 1-eps+eps/action_size
+    return best_p, random_p
+
+def future_rewards(rewards, gamma):
+    discounts = [gamma**i for i in range(len(rewards)+1)]
+    R = []
+    for i in range(len(rewards)):
+        R.append([sum([a*b for a,b in zip(discounts[:-(i+1)], rewards[i:])])])
+    return R
+
+def normalize(tensor):
+    return (tensor-tensor.mean())/(tensor.std()  + np.finfo(np.float32).eps)
+
 def env_summary():
     pass
