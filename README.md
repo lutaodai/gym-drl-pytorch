@@ -11,8 +11,8 @@ A PyTorch Implementation
 |---|:-:|:-:|:-:|:-:|
 |CartPole-v1|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|
 
-- :sweat_drops: in progress
-- :hourglass_flowing_sand: fune tuning
+- :sweat_drops: work in progress
+- :hourglass_flowing_sand: hyperparameter tuning
 - :ballot_box_with_check: done
 
 # Todo
