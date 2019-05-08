@@ -9,7 +9,7 @@ A PyTorch Implementation
 
 |Environment|DQN|Double-DQN|Dueling-DQN|REINFORCE|
 |---|:-:|:-:|:-:|:-:|
-|CartPole-v1|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|
+|CartPole-v1|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:hourglass_flowing_sand:|:ballot_box_with_check:|
 
 - :sweat_drops: work in progress
 - :hourglass_flowing_sand: hyperparameter tuning

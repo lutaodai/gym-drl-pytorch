@@ -21,6 +21,7 @@ class Policy(nn.Module):
         dims = (state_size,) + args.hidden_size + (action_size,)
         self.linears = nn.ModuleList([nn.Linear(dims[i], dims[i+1]) 
                                       for i in range(len(dims)-1)])
+        self.p = args.dropout
         
 
     def forward(self, x):
@@ -29,7 +30,7 @@ class Policy(nn.Module):
             if i == ind_end - 1:
                 x = F.softmax(l(x), dim=1)
             else:
-                x = F.relu(F.dropout(l(x), p=0.6))
+                x = F.relu(F.dropout(l(x), p=self.p))
         return x
     
     def act(self, state):

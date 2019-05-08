@@ -26,12 +26,13 @@ PARSER.add_argument('-f', '--flag', default='reinforce', type=str, help="saving 
 PARSER.add_argument('-ws', '--window_size', default=100, type=int,
                     help="moving average window for plotting")
 
-# RL hyperparameters
+# model hyperparameters
 PARSER.add_argument('-gamma', '--gamma', default=1., type=float, help='discount factor')
 PARSER.add_argument('-lr', '--lr', default=5e-4, type=float, help='learning rate')
+PARSER.add_argument('-d', '--dropout', default=0.5, type=float, help='dropout probability')
 
 # training hyperparameters
-PARSER.add_argument('-s', '--seed', default=4321, type=int, help="seeds")
+PARSER.add_argument('-s', '--seed', default=432, type=int, help="seeds")
 PARSER.add_argument('-maxt', '--maxt', default=10000, type=int, help="maximum episode length")
 PARSER.add_argument('-n', '--n_episode', default=2000, type=int, help="maximum numbers of episode")
 
@@ -67,6 +68,9 @@ if __name__ == "__main__":
     max_t = ARGS.maxt
     gamma = ARGS.gamma
     optimizer = optim.Adam(agent.policy.parameters(), lr=ARGS.lr)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.9, 
+                                                     verbose=True, threshold=1, 
+                                                     min_lr = 5e-4, patience=100)
 
     scores = []                        
     scores_window = deque(maxlen=100)  
@@ -93,6 +97,7 @@ if __name__ == "__main__":
         optimizer.zero_grad()
         policy_loss.backward()
         optimizer.step()
+        scheduler.step(np.mean(scores_window))
         
         print('\rEpisode {}\tAverage Score: {:.2f}'\
               .format(i_episode, np.mean(scores_window)), end="")

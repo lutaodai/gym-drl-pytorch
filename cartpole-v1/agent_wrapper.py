@@ -71,10 +71,11 @@ class AgentWrapper:
     def reinforce(self):
         if self.args.args_wrapper:
             self.args.flag = 'reinforce'
-            self.args.hidden_size = (128,)
+            self.args.hidden_size = (128, )
             self.args.window_size = 100
-            self.args.gamma = 0.99
+            self.args.gamma = 0.5
             self.args.lr = 1e-2
             self.args.maxt = 10000
             self.args.n_episode = 2000
+            self.args.dropout = 0
         self.agent = Reinforce
