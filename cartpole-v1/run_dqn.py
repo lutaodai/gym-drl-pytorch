@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import torch
+from torch.optim import lr_scheduler
 import os
 import argparse
 
@@ -55,7 +56,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 if __name__ == "__main__":
     # making environment
     env = gym.make("CartPole-v1")
-    env = env.unwrapped
+    # env = env.unwrapped
     action_size = env.action_space.n
     state_size = env.observation_space.shape[0]
     
@@ -83,6 +84,7 @@ if __name__ == "__main__":
     for i_episode in range(1, n_episodes+1):
         state = env.reset()
         score = 0
+        
         for t in range(max_t):
             # env.render()
             action = agent.act(state, eps)                 

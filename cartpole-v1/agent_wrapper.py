@@ -16,7 +16,7 @@ class AgentWrapper:
     def dqn(self):
         if self.args.args_wrapper:
             self.args.flag = 'dqn'
-            self.args.hidden_size = (64,128,256)
+            self.args.hidden_size = (128,)#(24,24)#(258,)#(64,128,256)
             self.args.window_size = 100
             self.args.buffer_size = int(1e5)
             self.args.gamma = 1.
@@ -28,13 +28,13 @@ class AgentWrapper:
             self.args.n_episode = 2000
             self.args.epi_start = 1.
             self.args.epi_end = 0.01
-            self.args.epi_decay = 0.995
+            self.args.epi_decay = 0.999
         self.agent = DQNAgent
     
     def double_dqn(self):
         if self.args.args_wrapper:
             self.args.flag = 'double_dqn'
-            self.args.hidden_size = (64,128,256)
+            self.args.hidden_size = (128,)#(64,128,256)
             self.args.window_size = 100
             self.args.buffer_size = int(1e5)
             self.args.gamma = 1.
@@ -46,26 +46,26 @@ class AgentWrapper:
             self.args.n_episode = 2000
             self.args.epi_start = 1.
             self.args.epi_end = 0.01
-            self.args.epi_decay = 0.995
+            self.args.epi_decay = 0.999 #0.995
         self.agent = DQNAgent
     
     def dueling_dqn(self):
         if self.args.args_wrapper:
             self.args.flag = 'dueling_dqn'
             # self.args.hidden_size = ((32,64), (128,), (64, 128)) #base, value, advantage
-            self.args.hidden_size = ((32,64,64), (64, 64), (64,128)) #base, value, advantage
+            self.args.hidden_size = ((256,), (128,), (128,)) #base, value, advantage
             self.args.window_size = 100
             self.args.buffer_size = int(1e5)
             self.args.gamma = 1.
             self.args.tau = 1e-3
-            self.args.lr = 5e-4
+            self.args.lr = 1e-3
             self.args.update_frequency = 1
             self.args.batch_size = 64
             self.args.maxt = 10000
             self.args.n_episode = 2000
             self.args.epi_start = 1.
             self.args.epi_end = 0.01
-            self.args.epi_decay = 0.995
+            self.args.epi_decay = 0.999
         self.agent = DQNAgent
     
     def reinforce(self):
