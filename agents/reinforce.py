@@ -19,11 +19,15 @@ class Policy(nn.Module):
         assert isinstance(args.hidden_size, tuple)
         
         dims = (state_size,) + args.hidden_size + (action_size,)
-        self.linears = nn.ModuleList([nn.Linear(dims[i], dims[i+1]) 
+        self.linears = nn.ModuleList([nn.Linear(dims[i], dims[i+1], bias=False) 
                                       for i in range(len(dims)-1)])
         self.p = args.dropout
+        self.init_weights()
         
-
+    def init_weights(self):
+        for w in self.parameters():
+            nn.init.xavier_normal_(w, 1e-4)
+        
     def forward(self, x):
         ind_end = len(self.linears)
         for i, l in enumerate(self.linears):

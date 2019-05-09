@@ -1,9 +1,10 @@
 from agents.dqn import DQNAgent
 from agents.reinforce import Reinforce
+from agents.sps import SPS
 
 class AgentWrapper:
     def __init__(self, args):
-        agent_list = ['dqn', 'double_dqn', 'dueling_dqn', 'reinforce']
+        agent_list = ['dqn', 'double_dqn', 'dueling_dqn', 'reinforce', 'sps']
         self.args = args
         self.agent_name = args.agent
         assert self.agent_name in agent_list, "invalid agent name. agent name \
@@ -71,11 +72,25 @@ class AgentWrapper:
     def reinforce(self):
         if self.args.args_wrapper:
             self.args.flag = 'reinforce'
-            self.args.hidden_size = (128, )
+            self.args.hidden_size = (128,)
             self.args.window_size = 100
-            self.args.gamma = 0.5
+            self.args.gamma = 1.
             self.args.lr = 1e-2
             self.args.maxt = 10000
             self.args.n_episode = 2000
             self.args.dropout = 0
         self.agent = Reinforce
+    
+    def sps(self):
+        if self.args.args_wrapper:
+            self.args.flag = 'sps'
+            self.args.hidden_size = ()
+            self.args.window_size = 100
+            self.args_wrapper = False
+            self.args.gamma = 1.
+            self.args.n_episode = 2000
+            self.args.init_noise_scale = 1e-2
+            self.args.noise_scale_min = 1e-3
+            self.args.noise_scale_max = 2
+            self.args.noise_scale_gamma = 2
+        self.agent = SPS
